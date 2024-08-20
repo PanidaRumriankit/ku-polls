@@ -80,6 +80,3 @@ __pypackages__/
 **/.venv/*
 **/ENV/*
 **/env/*
-
-# SQLite databases
-*.sqlite3
