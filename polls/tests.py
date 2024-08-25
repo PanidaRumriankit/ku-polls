@@ -100,3 +100,16 @@ class QuestionIndexViewTests(TestCase):
             response.context["latest_question_list"],
             [question2, question1],
         )
+
+
+class ResultsViewTests(TestCase):
+
+    def test_past_question(self):
+        """
+        The results view of a question with a pub_date in the past
+        displays the question's results.
+        """
+        past_question = create_question(question_text="Past question.", days=-5)
+        url = reverse("polls:results", args=(past_question.id,))
+        response = self.client.get(url)
+        self.assertContains(response, past_question.question_text)

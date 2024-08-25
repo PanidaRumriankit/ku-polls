@@ -8,6 +8,9 @@ from .models import Choice, Question
 
 
 class IndexView(generic.ListView):
+    """
+    A view that displays the last five published questions on the index page.
+    """
     template_name = "polls/index.html"
     context_object_name = "latest_question_list"
 
@@ -20,6 +23,9 @@ class IndexView(generic.ListView):
 
 
 class DetailView(generic.DetailView):
+    """
+    A view that displays the details of a specific question.
+    """
     model = Question
     template_name = "polls/detail.html"
 
@@ -31,16 +37,21 @@ class DetailView(generic.DetailView):
 
 
 class ResultsView(generic.DetailView):
+    """
+    A view that displays the results of a specific question.
+    """
     model = Question
     template_name = "polls/results.html"
 
 
 def vote(request, question_id):
+    """
+    Handle voting for a specific choice in a question.
+    """
     question = get_object_or_404(Question, pk=question_id)
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
     except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
         return render(
             request,
             "polls/detail.html",
@@ -52,7 +63,4 @@ def vote(request, question_id):
     else:
         selected_choice.votes = F("votes") + 1
         selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
