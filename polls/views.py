@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.contrib import messages
 from .models import Choice, Question
 
 
@@ -28,6 +29,18 @@ class DetailView(generic.DetailView):
     """
     model = Question
     template_name = "polls/detail.html"
+
+    def get(self, request, *args, **kwargs):
+        """
+        Override the get method to check if voting is allowed.
+        If not, redirect to the index page with an error message.
+        """
+        question = self.get_object()
+
+        if not question.can_vote():
+            messages.error(request, "Voting is not allowed for this question.")
+            return HttpResponseRedirect(reverse("polls:index"))
+        return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         """
