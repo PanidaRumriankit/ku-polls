@@ -82,6 +82,14 @@ class QuestionModelTests(TestCase):
         question = Question(pub_date=pub_time, end_date=end_time)
         self.assertFalse(question.can_vote())
 
+    def test_can_vote_with_now_end_date(self):
+        """
+        can_vote() returns False if current date time is end_date
+        """
+        pub_time = timezone.now() - datetime.timedelta(days=1)
+        question = Question(pub_date=pub_time, end_date=timezone.now())
+        self.assertFalse(question.can_vote())
+
     def test_can_vote_with_no_end_date(self):
         """
         can_vote() returns True if there is no end_date and the current
