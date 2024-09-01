@@ -25,3 +25,4 @@ All project documents are in the [Project Wiki](../../wiki/Home).
 
 Plan for each iteration:
 - [Iteration 1 Plan](../../wiki/Iteration%201%20Plan)
+- [Iteration 2 Plan](../../wiki/Iteration%202%20Plan)
