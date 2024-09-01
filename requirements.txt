@@ -1,1 +1,2 @@
 Django
+python_decouple = 3.8

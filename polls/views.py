@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.contrib import messages
 from .models import Choice, Question
 
 
@@ -29,11 +30,24 @@ class DetailView(generic.DetailView):
     model = Question
     template_name = "polls/detail.html"
 
+    def get(self, request, *args, **kwargs):
+        """
+        Override the get method to check if voting is allowed.
+        If not, redirect to the index page with an error message.
+        """
+        question = self.get_object()
+
+        if not question.can_vote():
+            messages.error(request, "Voting is not allowed for this question.")
+            return HttpResponseRedirect(reverse("polls:index"))
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         """
         Excludes any questions that aren't published yet.
         """
-        return Question.objects.filter(pub_date__lte=timezone.now())
+        return Question.objects.filter(pub_date__lte=timezone.now(),
+                                       pk__in=[q.pk for q in Question.objects.all() if q.is_published()])
 
 
 class ResultsView(generic.DetailView):
@@ -49,6 +63,17 @@ def vote(request, question_id):
     Handle voting for a specific choice in a question.
     """
     question = get_object_or_404(Question, pk=question_id)
+
+    if not question.can_vote():
+        return render(
+            request,
+            "polls/detail.html",
+            {
+                "question": question,
+                "error_message": "Voting is not allowed for this question.",
+            },
+        )
+
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
     except (KeyError, Choice.DoesNotExist):
