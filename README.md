@@ -22,7 +22,9 @@ All project documents are in the [Project Wiki](../../wiki/Home).
 - [Vision Statement](../../wiki/Vision%20and%20Scope)
 - [Requirements](../../wiki/Requirements)
 - [Project Plan](../../wiki/Project%20Plan)
+- [Domain Model](../../wiki/Domain%20Model)
 
 Plan for each iteration:
 - [Iteration 1 Plan](../../wiki/Iteration%201%20Plan)
 - [Iteration 2 Plan](../../wiki/Iteration%202%20Plan)
+- [Iteration 3 Plan](../../wiki/Iteration%203%20Plan)
