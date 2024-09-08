@@ -126,8 +126,11 @@ def vote(request, question_id):
         logger.info(
             f"User {user.username} is voting for choice {selected_choice.id} "
             f"on question {question_id} from {ip}")
-        new_vote = Vote(user=user, choice=selected_choice)
-        new_vote.save()
+        Vote.objects.create(user=user, choice=selected_choice)
+
+    messages.success(request,
+                     f"Your vote for '{selected_choice.choice_text}' "
+                     f"has been recorded.")
 
     return HttpResponseRedirect(reverse("polls:results",
                                         args=(question.id,)))
