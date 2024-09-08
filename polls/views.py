@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.signals import user_logged_in, user_logged_out, \
     user_login_failed
 from django.dispatch import receiver
-from .models import Choice, Question
+from .models import Choice, Question, Vote
 import logging
 
 logger = logging.getLogger(__name__)
@@ -30,6 +30,13 @@ class IndexView(generic.ListView):
         published in the future).
         """
         return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[:5]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['poll_status'] = {
+            question.id: 'Open' if question.can_vote() else 'Closed' for
+            question in context['latest_question_list']}
+        return context
 
 
 class DetailView(generic.DetailView):
@@ -58,6 +65,16 @@ class DetailView(generic.DetailView):
         return Question.objects.filter(pub_date__lte=timezone.now(),
                                        pk__in=[q.pk for q in Question.objects.all() if q.is_published()])
 
+    def get_context_data(self, **kwargs):
+        """ Add the user's previous vote to the context. """
+        context = super().get_context_data(**kwargs)
+        question = self.get_object()
+        user = self.request.user
+        if user.is_authenticated:
+            previous_vote = Vote.objects.filter(user=user,
+                                                choice__question=question).first()
+            context['previous_vote'] = previous_vote
+        return context
 
 class ResultsView(generic.DetailView):
     """
@@ -72,20 +89,22 @@ def vote(request, question_id):
     """
     Handle voting for a specific choice in a question.
     """
+    user = request.user
+    logger.info(f"User {user.username} is voting on question {question_id}")
     question = get_object_or_404(Question, pk=question_id)
+    ip = get_client_ip(request)
 
     if not question.can_vote():
-        return render(
-            request,
-            "polls/detail.html",
-            {
-                "question": question,
-                "error_message": "Voting is not allowed for this question.",
-            },
-        )
+        logger.warning(
+            f"User {user.username} tried to vote on closed question {question_id} from {ip}")
+        messages.error(request, "Voting is not allowed for this poll.")
+        return redirect('polls:index')
 
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
+        logger.info(
+            f"User {user.username} selected choice {selected_choice.id} from {ip}")
+
     except (KeyError, Choice.DoesNotExist):
         return render(
             request,
@@ -95,10 +114,23 @@ def vote(request, question_id):
                 "error_message": "You didn't select a choice.",
             },
         )
-    else:
-        selected_choice.votes = F("votes") + 1
-        selected_choice.save()
-        return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+    try:
+        existing_vote = Vote.objects.get(user=user, choice__question=question)
+        logger.info(
+            f"User {user.username} is updating their vote to choice "
+            f"{selected_choice.id} on question {question_id} from {ip}")
+        existing_vote.choice = selected_choice
+        existing_vote.save()
+
+    except Vote.DoesNotExist:
+        logger.info(
+            f"User {user.username} is voting for choice {selected_choice.id} "
+            f"on question {question_id} from {ip}")
+        new_vote = Vote(user=user, choice=selected_choice)
+        new_vote.save()
+
+    return HttpResponseRedirect(reverse("polls:results",
+                                        args=(question.id,)))
 
 
 def signup(request):
