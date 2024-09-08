@@ -114,6 +114,7 @@ def vote(request, question_id):
                 "error_message": "You didn't select a choice.",
             },
         )
+
     try:
         existing_vote = Vote.objects.get(user=user, choice__question=question)
         logger.info(
