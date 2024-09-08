@@ -5,6 +5,17 @@
 
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 
+{% if user.is_authenticated %}
+    <span>Login as {{ user.username }}</span>
+    <br>
+    <form action="{% url 'logout' %}" method="post" style="margin-top: 5px;">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+{% else %}
+    <span>Please <a href="{% url 'login' %}?next={{ request.path }}">Login</a></span>
+{% endif %}
+
 <h1 style="text-align: center">{{ question.question_text }}</h1>
 
 <table class="table table-bordered table-dark">
