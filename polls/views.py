@@ -1,11 +1,20 @@
 from django.db.models import F
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from django.contrib import messages
-from .models import Choice, Question
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.signals import user_logged_in, user_logged_out, \
+    user_login_failed
+from django.dispatch import receiver
+from .models import Choice, Question, Vote
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class IndexView(generic.ListView):
@@ -21,6 +30,13 @@ class IndexView(generic.ListView):
         published in the future).
         """
         return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[:5]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['poll_status'] = {
+            question.id: 'Open' if question.can_vote() else 'Closed' for
+            question in context['latest_question_list']}
+        return context
 
 
 class DetailView(generic.DetailView):
@@ -49,6 +65,16 @@ class DetailView(generic.DetailView):
         return Question.objects.filter(pub_date__lte=timezone.now(),
                                        pk__in=[q.pk for q in Question.objects.all() if q.is_published()])
 
+    def get_context_data(self, **kwargs):
+        """ Add the user's previous vote to the context. """
+        context = super().get_context_data(**kwargs)
+        question = self.get_object()
+        user = self.request.user
+        if user.is_authenticated:
+            previous_vote = Vote.objects.filter(user=user,
+                                                choice__question=question).first()
+            context['previous_vote'] = previous_vote
+        return context
 
 class ResultsView(generic.DetailView):
     """
@@ -58,24 +84,27 @@ class ResultsView(generic.DetailView):
     template_name = "polls/results.html"
 
 
+@login_required
 def vote(request, question_id):
     """
     Handle voting for a specific choice in a question.
     """
+    user = request.user
+    logger.info(f"User {user.username} is voting on question {question_id}")
     question = get_object_or_404(Question, pk=question_id)
+    ip = get_client_ip(request)
 
     if not question.can_vote():
-        return render(
-            request,
-            "polls/detail.html",
-            {
-                "question": question,
-                "error_message": "Voting is not allowed for this question.",
-            },
-        )
+        logger.warning(
+            f"User {user.username} tried to vote on closed question {question_id} from {ip}")
+        messages.error(request, "Voting is not allowed for this poll.")
+        return redirect('polls:index')
 
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
+        logger.info(
+            f"User {user.username} selected choice {selected_choice.id} from {ip}")
+
     except (KeyError, Choice.DoesNotExist):
         return render(
             request,
@@ -85,7 +114,73 @@ def vote(request, question_id):
                 "error_message": "You didn't select a choice.",
             },
         )
+
+    try:
+        existing_vote = Vote.objects.get(user=user, choice__question=question)
+        logger.info(
+            f"User {user.username} is updating their vote to choice "
+            f"{selected_choice.id} on question {question_id} from {ip}")
+        existing_vote.choice = selected_choice
+        existing_vote.save()
+
+    except Vote.DoesNotExist:
+        logger.info(
+            f"User {user.username} is voting for choice {selected_choice.id} "
+            f"on question {question_id} from {ip}")
+        Vote.objects.create(user=user, choice=selected_choice)
+
+    messages.success(request,
+                     f"Your vote for '{selected_choice.choice_text}' "
+                     f"has been recorded.")
+
+    return HttpResponseRedirect(reverse("polls:results",
+                                        args=(question.id,)))
+
+
+def signup(request):
+    """
+    Register a new user
+    """
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_passwd = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_passwd)
+            login(request, user)
+            return redirect('polls:index')
     else:
-        selected_choice.votes = F("votes") + 1
-        selected_choice.save()
-        return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+        form = UserCreationForm()
+    return render(request, 'registration/signup.html', {'form': form})
+
+
+def get_client_ip(request):
+    """
+
+    """
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+@receiver(user_logged_in)
+def login_success(sender, request, user, **kwargs):
+    ip_addr = get_client_ip(request)
+    logger.info(f"{user.username} logged in from {ip_addr}")
+
+
+@receiver(user_logged_out)
+def logout_success(sender, request, user, **kwargs):
+    ip_addr = get_client_ip(request)
+    logger.info(f"{user.username} logged out from {ip_addr}")
+
+
+@receiver(user_login_failed)
+def login_fail(sender, credentials, request, **kwargs):
+    ip_addr = get_client_ip(request)
+    logger.warning(
+        f"Failed login for {credentials.get('username', 'unknown')} from {ip_addr}")
