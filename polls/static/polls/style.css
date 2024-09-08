@@ -3,5 +3,10 @@ li a {
 }
 
 body {
-    background: white url("images/background.jpg") no-repeat;
+    background: black;
+}
+
+h1 {
+    text-align: center;
+    color: white;
 }
