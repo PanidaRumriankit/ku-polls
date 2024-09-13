@@ -76,6 +76,7 @@ class DetailView(generic.DetailView):
             context['previous_vote'] = previous_vote
         return context
 
+
 class ResultsView(generic.DetailView):
     """
     A view that displays the results of a specific question.
@@ -157,7 +158,7 @@ def signup(request):
 
 def get_client_ip(request):
     """
-
+    Get a visitor's IP Address
     """
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
