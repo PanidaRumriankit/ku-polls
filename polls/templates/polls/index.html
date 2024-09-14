@@ -29,20 +29,7 @@
 {% endif %}
 
 <div class="container mt-5 px-2">
-    <div class="mb-2 d-flex justify-content-between align-items-center">
-        <div class="position-relative">
-            <span class="position-absolute search"><i class="fa fa-search"></i></span>
-            <form method="GET" action="{% url 'polls:index' %}">
-                <input
-                    class="form-control w-100"
-                    type="text"
-                    name="q"
-                    placeholder="Search by question..."
-                    value="{{ query }}"
-                >
-            </form>
-        </div>
-    </div>
+
     <div class="table-responsive">
     <table class="table table-responsive table-borderless table-dark table-hover">
       <thead>
