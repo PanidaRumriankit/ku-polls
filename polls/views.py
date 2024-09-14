@@ -28,7 +28,8 @@ class IndexView(generic.ListView):
         Return the published questions (not including those set to be
         published in the future).
         """
-        return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")
+        return Question.objects.filter(pub_date__lte=timezone.now())\
+            .order_by("-pub_date")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -62,7 +63,9 @@ class DetailView(generic.DetailView):
         Excludes any questions that aren't published yet.
         """
         return Question.objects.filter(pub_date__lte=timezone.now(),
-                                       pk__in=[q.pk for q in Question.objects.all() if q.is_published()])
+                                       pk__in=[q.pk for q in
+                                               Question.objects.all()
+                                               if q.is_published()])
 
     def get_context_data(self, **kwargs):
         """ Add the user's previous vote to the context. """
@@ -71,7 +74,8 @@ class DetailView(generic.DetailView):
         user = self.request.user
         if user.is_authenticated:
             previous_vote = Vote.objects.filter(user=user,
-                                                choice__question=question).first()
+                                                choice__question=question)\
+                .first()
             context['previous_vote'] = previous_vote
         return context
 
@@ -90,20 +94,23 @@ def vote(request, question_id):
     Handle voting for a specific choice in a question.
     """
     user = request.user
-    logger.info(f"User {user.username} is voting on question {question_id}")
+    logger.info(f"User {user.username} is voting on "
+                f"question {question_id}")
     question = get_object_or_404(Question, pk=question_id)
     ip = get_client_ip(request)
 
     if not question.can_vote():
         logger.warning(
-            f"User {user.username} tried to vote on closed question {question_id} from {ip}")
+            f"User {user.username} tried to vote on closed question "
+            f"{question_id} from {ip}")
         messages.error(request, "Voting is not allowed for this poll.")
         return redirect('polls:index')
 
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
         logger.info(
-            f"User {user.username} selected choice {selected_choice.id} from {ip}")
+            f"User {user.username} selected choice {selected_choice.id} "
+            f"from {ip}")
 
     except (KeyError, Choice.DoesNotExist):
         return render(
@@ -183,4 +190,5 @@ def logout_success(sender, request, user, **kwargs):
 def login_fail(sender, credentials, request, **kwargs):
     ip_addr = get_client_ip(request)
     logger.warning(
-        f"Failed login for {credentials.get('username', 'unknown')} from {ip_addr}")
+        f"Failed login for {credentials.get('username', 'unknown')} "
+        f"from {ip_addr}")

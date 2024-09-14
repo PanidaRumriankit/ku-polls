@@ -13,7 +13,8 @@ class QuestionAdmin(admin.ModelAdmin):
     list_filter = ["pub_date"]
     fieldsets = [
         (None, {"fields": ["question_text"]}),
-        ("Date information", {"fields": ["pub_date", "end_date"], "classes": ["collapse"]}),
+        ("Date information", {"fields": ["pub_date", "end_date"],
+                              "classes": ["collapse"]}),
     ]
     inlines = [ChoiceInline]
     search_fields = ["question_text"]

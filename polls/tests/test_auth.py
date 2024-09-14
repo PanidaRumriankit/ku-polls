@@ -1,13 +1,16 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
+
+from mysite import settings
 from polls.models import Question, Choice
 
 
 class UserAuthTest(TestCase):
 
     def setUp(self):
-        # superclass setUp creates a Client object and initializes test database
+        # superclass setUp creates a Client object
+        # and initializes test database
         super().setUp()
         self.username = "testuser"
         self.password = "FatChance!"
