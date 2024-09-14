@@ -1,8 +1,38 @@
-li a {
-    color: green;
+a {
+    color: whitesmoke;
+    text-decoration: none;
+}
+
+a:hover {
+    color: dodgerblue;
 }
 
 body {
     background: black;
     color: white;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.hover-dark:hover {
+    background-color: #000000;
+    color: #fff !important;
+}
+
+.no-bottom-padding {
+    padding-bottom: 0 !important;
+}
+
+.search {
+  top:6px;
+  left:10px;
+}
+
+.form-control {
+    border:none;
+    padding-left:32px;
+}
+
+.form-control:focus {
+    border:none;
+    box-shadow:none;
 }

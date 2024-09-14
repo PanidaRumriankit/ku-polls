@@ -6,22 +6,80 @@
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 
 {% if user.is_authenticated %}
-    <span>Login as {{ user.username }}</span>
-    <br>
-    <form action="{% url 'logout' %}" method="post" style="margin-top: 5px;">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
+    <div class="border-bottom border-white pt-2 mb-2 d-flex justify-content-end align-items-center">
+        <p class="p-2 no-bottom-padding">Login as {{ user.username }}</p>
+        <form action="{% url 'logout' %}" method="post" class="m-0 pb-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-light text-dark hover-dark">Logout</button>
+        </form>
+    </div>
 {% else %}
-    <span>Please <a href="{% url 'login' %}?next={{ request.path }}">Login</a></span>
+    <div class="border-bottom border-white text-end pt-2 pb-2 mb-2">
+        <a href="{% url 'signup' %}?next={{ request.path }}" role="button" class="btn btn-outline-light">Sign-up</a>
+        <a href="{% url 'login' %}?next={{ request.path }}" role="button" class="btn btn-light text-dark hover-dark">Login</a>
+    </div>
 {% endif %}
 
-{% if latest_question_list %}
-    <ul>
-    {% for question in latest_question_list %}
-        <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a>    <a href="{% url 'polls:results' question.id %}">Results</a></li>
+{% if messages %}
+<ul class="messages mb-0">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}><h5 style="color: salmon; font-style: italic;"> {{ message }} </h5></li>
     {% endfor %}
-    </ul>
-{% else %}
-    <p>No polls are available.</p>
+</ul>
 {% endif %}
+
+<div class="container mt-5 px-2">
+    <div class="mb-2 d-flex justify-content-between align-items-center">
+        <div class="position-relative">
+            <span class="position-absolute search"><i class="fa fa-search"></i></span>
+            <form method="GET" action="{% url 'polls:index' %}">
+                <input
+                    class="form-control w-100"
+                    type="text"
+                    name="q"
+                    placeholder="Search by question..."
+                    value="{{ query }}"
+                >
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive">
+    <table class="table table-responsive table-borderless table-dark table-hover">
+      <thead>
+        <tr class="bg-light">
+            <th scope="col" width="5%">#</th>
+            <th scope="col" width="35%">Question</th>
+            <th scope="col" width="20%">Open</th>
+            <th scope="col" width="20%">Close</th>
+            <th scope="col" width="10%">Status</th>
+            <th scope="col" width="10%">Results</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if latest_question_list %}
+            {% for question in latest_question_list %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></td>
+                    <td>{{ question.pub_date }}</td>
+                    <td>{{ question.end_date }}</td>
+                    <td>
+                        {% if question.can_vote %}
+                            Open
+                        {% else %}
+                            Closed
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'polls:results' question.id %}">Result</a></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <th scope="row">#</th>
+                <td>No polls are available.</td>
+            </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>

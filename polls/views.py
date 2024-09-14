@@ -1,4 +1,3 @@
-from django.db.models import F
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -11,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.signals import user_logged_in, user_logged_out, \
     user_login_failed
 from django.dispatch import receiver
+from django.db.models import Q
 from .models import Choice, Question, Vote
 import logging
 
@@ -19,17 +19,18 @@ logger = logging.getLogger(__name__)
 
 class IndexView(generic.ListView):
     """
-    A view that displays the last five published questions on the index page.
+    A view that displays the published questions on the index page.
     """
     template_name = "polls/index.html"
     context_object_name = "latest_question_list"
 
     def get_queryset(self):
         """
-        Return the last five published questions (not including those set to be
+        Return the published questions (not including those set to be
         published in the future).
         """
-        return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[:5]
+        return Question.objects.filter(pub_date__lte=timezone.now())\
+            .order_by("-pub_date")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -60,21 +61,29 @@ class DetailView(generic.DetailView):
 
     def get_queryset(self):
         """
-        Excludes any questions that aren't published yet.
+        Return the published questions, optionally filtered by a search query.
         """
-        return Question.objects.filter(pub_date__lte=timezone.now(),
-                                       pk__in=[q.pk for q in Question.objects.all() if q.is_published()])
+        query = self.request.GET.get('q')
+
+        queryset = Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")
+
+        if query:
+            queryset = queryset.filter(Q(question_text__icontains=query))
+
+        return queryset
 
     def get_context_data(self, **kwargs):
-        """ Add the user's previous vote to the context. """
+        """
+        Add additional context data (poll status and the search query).
+        """
         context = super().get_context_data(**kwargs)
-        question = self.get_object()
-        user = self.request.user
-        if user.is_authenticated:
-            previous_vote = Vote.objects.filter(user=user,
-                                                choice__question=question).first()
-            context['previous_vote'] = previous_vote
+
+        context['poll_status'] = 'Open' if self.object.can_vote() else 'Closed'
+
+        context['query'] = self.request.GET.get('q', '')
+
         return context
+
 
 class ResultsView(generic.DetailView):
     """
@@ -90,20 +99,23 @@ def vote(request, question_id):
     Handle voting for a specific choice in a question.
     """
     user = request.user
-    logger.info(f"User {user.username} is voting on question {question_id}")
+    logger.info(f"User {user.username} is voting on "
+                f"question {question_id}")
     question = get_object_or_404(Question, pk=question_id)
     ip = get_client_ip(request)
 
     if not question.can_vote():
         logger.warning(
-            f"User {user.username} tried to vote on closed question {question_id} from {ip}")
+            f"User {user.username} tried to vote on closed question "
+            f"{question_id} from {ip}")
         messages.error(request, "Voting is not allowed for this poll.")
         return redirect('polls:index')
 
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
         logger.info(
-            f"User {user.username} selected choice {selected_choice.id} from {ip}")
+            f"User {user.username} selected choice {selected_choice.id} "
+            f"from {ip}")
 
     except (KeyError, Choice.DoesNotExist):
         return render(
@@ -157,7 +169,7 @@ def signup(request):
 
 def get_client_ip(request):
     """
-
+    Get a visitor's IP Address
     """
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
@@ -183,4 +195,5 @@ def logout_success(sender, request, user, **kwargs):
 def login_fail(sender, credentials, request, **kwargs):
     ip_addr = get_client_ip(request)
     logger.warning(
-        f"Failed login for {credentials.get('username', 'unknown')} from {ip_addr}")
+        f"Failed login for {credentials.get('username', 'unknown')} "
+        f"from {ip_addr}")
