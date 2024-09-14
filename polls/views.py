@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.signals import user_logged_in, user_logged_out, \
     user_login_failed
 from django.dispatch import receiver
+from django.db.models import Q
 from .models import Choice, Question, Vote
 import logging
 
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 class IndexView(generic.ListView):
     """
-    A view that displays the last five published questions on the index page.
+    A view that displays the published questions on the index page.
     """
     template_name = "polls/index.html"
     context_object_name = "latest_question_list"
@@ -60,23 +61,27 @@ class DetailView(generic.DetailView):
 
     def get_queryset(self):
         """
-        Excludes any questions that aren't published yet.
+        Return the published questions, optionally filtered by a search query.
         """
-        return Question.objects.filter(pub_date__lte=timezone.now(),
-                                       pk__in=[q.pk for q in
-                                               Question.objects.all()
-                                               if q.is_published()])
+        query = self.request.GET.get('q')
+
+        queryset = Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")
+
+        if query:
+            queryset = queryset.filter(Q(question_text__icontains=query))
+
+        return queryset
 
     def get_context_data(self, **kwargs):
-        """ Add the user's previous vote to the context. """
+        """
+        Add additional context data (poll status and the search query).
+        """
         context = super().get_context_data(**kwargs)
-        question = self.get_object()
-        user = self.request.user
-        if user.is_authenticated:
-            previous_vote = Vote.objects.filter(user=user,
-                                                choice__question=question)\
-                .first()
-            context['previous_vote'] = previous_vote
+
+        context['poll_status'] = 'Open' if self.object.can_vote() else 'Closed'
+
+        context['query'] = self.request.GET.get('q', '')
+
         return context
 
 
