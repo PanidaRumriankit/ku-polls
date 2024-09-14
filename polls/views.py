@@ -77,10 +77,18 @@ class DetailView(generic.DetailView):
         Add additional context data (poll status and the search query).
         """
         context = super().get_context_data(**kwargs)
+        question = self.get_object()
+        user = self.request.user
 
         context['poll_status'] = 'Open' if self.object.can_vote() else 'Closed'
 
         context['query'] = self.request.GET.get('q', '')
+
+        if user.is_authenticated:
+            previous_vote = Vote.objects.filter(user=user,
+                                                choice__question=question).first()
+            context['previous_vote'] = previous_vote
+        return context
 
         return context
 
