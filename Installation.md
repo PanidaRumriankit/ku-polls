@@ -1,9 +1,9 @@
 1. Clone or download the code from Github <br>
     `git clone https://github.com/PanidaRumriankit/ku-polls`
 2. Create a virtual environment <br>
-    `python -m venv .venv`
+    `python -m venv venv`
 3. Activate the virtual environment <br>
-    `.\venv\Scripts\activate`
+    `venv\Scripts\activate`
 4. Install dependencies <br>
     `pip install -r requirements.txt`
 5. Set values for externalized variables <br>
