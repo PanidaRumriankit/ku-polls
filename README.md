@@ -15,6 +15,15 @@ https://cpske.github.io/ISP) course at [Kasetsart University](https://www.ku.ac.
 
 start the development server to run the app locally `python manage.py runserver`
 
+## Demo Users
+
+Table of logins & passwords <br>
+| Username | Password |
+|----------|----------|
+| demo1    | hackme11 |
+| demo2    | hackme22 |
+| demo3    | hackme33 |
+
 ## Project Documents
 
 All project documents are in the [Project Wiki](../../wiki/Home).
