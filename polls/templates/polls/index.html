@@ -5,25 +5,14 @@
 
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 
-{% if user.is_authenticated %}
-    <div class="border-bottom border-white pt-2 mb-2 d-flex justify-content-end align-items-center">
-        <p class="p-2 no-bottom-padding">Login as {{ user.username }}</p>
-        <form action="{% url 'logout' %}" method="post" class="m-0 pb-2">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-light text-dark hover-dark">Logout</button>
-        </form>
-    </div>
-{% else %}
-    <div class="border-bottom border-white text-end pt-2 pb-2 mb-2">
-        <a href="{% url 'signup' %}?next={{ request.path }}" role="button" class="btn btn-outline-light">Sign-up</a>
-        <a href="{% url 'login' %}?next={{ request.path }}" role="button" class="btn btn-light text-dark hover-dark">Login</a>
-    </div>
-{% endif %}
+<title>KU Polls</title>
+
+{% include 'polls/header.html' %}
 
 {% if messages %}
 <ul class="messages mb-0">
     {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}><h5 style="color: salmon; font-style: italic;"> {{ message }} </h5></li>
+    <div{% if message.tags %} class="{{ message.tags }}"{% endif %}><h5 style="background-color: salmon; display: inline-block;"> {{ message }} </h5></div>
     {% endfor %}
 </ul>
 {% endif %}

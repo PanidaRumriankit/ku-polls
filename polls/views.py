@@ -111,11 +111,11 @@ class ResultsView(generic.DetailView):
         try:
             question = get_object_or_404(Question, pk=kwargs['pk'])
             if not question.is_published():
-                messages.error(request, "Cannot access this question")
+                messages.error(request, "Cannot access the result")
                 return HttpResponseRedirect(reverse("polls:index"))
             return super().get(request, *args, **kwargs)
         except Http404:
-            messages.error(request, "Cannot access this question")
+            messages.error(request, "Cannot access the result")
             return HttpResponseRedirect(reverse("polls:index"))
 
 
