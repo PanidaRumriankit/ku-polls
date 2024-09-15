@@ -27,16 +27,25 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         """
         Return the published questions (not including those set to be
-        published in the future).
+        published in the future). If a search query is provided, filter
+        questions by the search term.
         """
-        return Question.objects.filter(pub_date__lte=timezone.now())\
+        query = self.request.GET.get('q', '')  # Get the search query from the URL
+
+        queryset = Question.objects.filter(pub_date__lte=timezone.now()) \
             .order_by("-pub_date")
 
+        if query:
+            queryset = queryset.filter(Q(question_text__icontains=query))
+
+        return queryset
+
     def get_context_data(self, **kwargs):
+        """
+        Add the search query to the context to keep it in the input field after the search.
+        """
         context = super().get_context_data(**kwargs)
-        context['poll_status'] = {
-            question.id: 'Open' if question.can_vote() else 'Closed' for
-            question in context['latest_question_list']}
+        context['query'] = self.request.GET.get('q', '')
         return context
 
 
@@ -66,7 +75,7 @@ class DetailView(generic.DetailView):
 
     def get_queryset(self):
         """
-        Return the published questions, optionally filtered by a search query.
+        Return the published questions.
         """
         query = self.request.GET.get('q')
 
@@ -79,15 +88,11 @@ class DetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         """
-        Add additional context data (poll status and the search query).
+        Add previous vote data.
         """
         context = super().get_context_data(**kwargs)
         question = self.get_object()
         user = self.request.user
-
-        context['poll_status'] = 'Open' if self.object.can_vote() else 'Closed'
-
-        context['query'] = self.request.GET.get('q', '')
 
         if user.is_authenticated:
             previous_vote = Vote.objects.filter(user=user,

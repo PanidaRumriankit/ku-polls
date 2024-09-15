@@ -4,6 +4,7 @@
 {% bootstrap_javascript %}
 
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
 
 <title>KU Polls</title>
 
@@ -19,6 +20,24 @@
 {% endif %}
 
 <div class="container mt-5 px-2">
+
+    <div class="mb-2 d-flex justify-content-between align-items-center">
+        <div class="position-relative">
+            <span class="position-absolute search"><i class="fa fa-search"></i></span>
+            <form method="GET" action="{% url 'polls:index' %}" class="d-flex align-items-center">
+                <input
+                    class="form-control w-100"
+                    type="text"
+                    name="q"
+                    placeholder="Search by question..."
+                    value="{{ query }}"
+                >
+                <button type="submit" class="btn btn-link text-light p-0 ms-2">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
 
     <div class="table-responsive">
     <table class="table table-responsive table-borderless table-dark table-hover">
