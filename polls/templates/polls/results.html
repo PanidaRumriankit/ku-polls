@@ -5,6 +5,8 @@
 
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 
+<body class="bg-black bg-gradient">
+
 {% include 'polls/header.html' %}
 
 <h1 style="text-align: center">{{ question.question_text }}</h1>
@@ -16,23 +18,26 @@
     {% endfor %}
 </ul>
 {% endif %}
+<div class="d-flex justify-content-center">
+    <table class="table table-bordered table-dark w-auto">
+        <thead>
+            <tr>
+                <th scope="col">Question</th>
+                <th scope="col">Vote</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for choice in question.choice_set.all %}
+            <tr>
+                <td>{{ choice.choice_text }}</td>
+                <td>{{ choice.vote }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
 
-<table class="table table-bordered table-dark">
-    <thead>
-        <tr>
-            <th scope="col">Question</th>
-            <th scope="col">Vote</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for choice in question.choice_set.all %}
-        <tr>
-            <td>{{ choice.choice_text }}</td>
-            <td>{{ choice.vote }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-
-</table>
+    </table>
+</div>
 
 <a href="{% url 'polls:index'%}" role="button" class="btn btn-outline-light">Back to List of Polls</a>
+
+</body>

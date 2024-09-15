@@ -5,7 +5,11 @@
 
 <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 
+<body class="bg-black bg-gradient">
+
 {% include 'polls/header.html' %}
+
+<div class="d-flex flex-column justify-content-center align-items-center">
 
 <form action="{% url 'polls:vote' question.id %}" method="post">
 {% csrf_token %}
@@ -18,7 +22,12 @@
         <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
     {% endfor %}
 </fieldset>
-<input type="submit" value="Vote">
+<input class="btn btn-light hover-light mt-2" type="submit" value="Vote">
 </form>
-<a href="{% url 'polls:results' question.id %}" role="button" class="btn btn-outline-light">Results</a>
-<a href="{% url 'polls:index'%}" role="button" class="btn btn-outline-light">Back to List of Polls</a>
+<div class="d-flex flex-row-reverse gap-2 w-75">
+    <a href="{% url 'polls:results' question.id %}" role="button" class="btn btn-outline-light">Results</a>
+    <a href="{% url 'polls:index'%}" role="button" class="btn btn-outline-light">Back to List of Polls</a>
+</div>
+</div>
+</body>
+

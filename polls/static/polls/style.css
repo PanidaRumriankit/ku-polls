@@ -16,14 +16,22 @@ a:hover {
 }
 
 body {
-    background: black;
     color: white;
     font-family: 'Open Sans', sans-serif;
 }
 
 .hover-dark:hover {
-    background-color: #000000;
+    background-color: #212529;
     color: #fff !important;
+}
+
+.hover-light {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.hover-light:hover {
+    background-color: #999999;
+    border-color: #999999;
 }
 
 .no-bottom-padding {
