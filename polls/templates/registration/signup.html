@@ -1,12 +1,24 @@
-<h2>Register</h2>
-<form method="POST">
-    {% csrf_token %}
-    <table style="padding: 2ex;">
-    {{ form.as_table }}
-    <tr>
-    <td colspan="2">
-    <button type="submit">Register</button>
-    </td>
-    </tr>
-    </table>
-</form>
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<link rel="stylesheet" href="{% static 'polls/style.css' %}">
+
+<title>Sign Up</title>
+
+<div class="d-flex flex-column justify-content-center align-items-center gap-3 vh-100">
+  <div class="bg-dark p-4 rounded-3">
+    <h2 class="text-center">Sign Up</h2>
+    <form method="post" class="d-flex flex-column justify-content-center gap-3 pt-2">
+      {% csrf_token %}
+      <table>
+      {{ form.as_table }}
+      </table>
+      <div class="d-flex flex-column align-items-center">
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+      </div>
+      <input type="hidden" name="next" value="{{next}}"/>
+     </form>
+  </div>
+</div>

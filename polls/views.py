@@ -119,8 +119,6 @@ class ResultsView(generic.DetailView):
             return HttpResponseRedirect(reverse("polls:index"))
 
 
-
-
 @login_required
 def vote(request, question_id):
     """

@@ -7,6 +7,14 @@ a:hover {
     color: dodgerblue;
 }
 
+#spec-a {
+    color: dodgerblue !important;
+}
+
+#spec-a:hover {
+    color: #0F52BA !important;
+}
+
 body {
     background: black;
     color: white;
@@ -35,4 +43,20 @@ body {
 .form-control:focus {
     border:none;
     box-shadow:none;
+}
+
+table tr td {
+    vertical-align: middle;
+    padding: 5px 10px;
+}
+
+table tr td input {
+    width: 100%; /* Ensures the input fields span the full width */
+}
+
+table tr td .helptext {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: lightgray;
 }
