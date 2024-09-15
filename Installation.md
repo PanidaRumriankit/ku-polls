@@ -3,13 +3,21 @@
 2. Create a virtual environment <br>
     `python -m venv venv`
 3. Activate the virtual environment <br>
-    `venv\Scripts\activate`
+    - Windows
+      `venv\Scripts\activate`
+    - macOS/Linux
+      `source venv/bin/activate`
 4. Install dependencies <br>
     `pip install -r requirements.txt`
-5. Run migrations <br>
+5. Set values for externalized variables
+    - Windows
+      `copy sample.env .env`
+    - macOS/Linux
+      `cp sample.env .env`
+6. Run migrations <br>
     `python manage.py migrate`
-6. Run tests <br>
+7. Run tests <br>
     `python manage.py test`
-7. Install data from the data fixtures <br>
+8. Install data from the data fixtures <br>
     `python manage.py loaddata data/<filename>`
     
