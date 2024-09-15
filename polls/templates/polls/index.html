@@ -61,9 +61,9 @@
                     <td>{{ question.end_date }}</td>
                     <td>
                         {% if question.can_vote %}
-                            Open
+                            <img src="../../static/polls/images/checked.png" alt="checked" width="16px">
                         {% else %}
-                            Closed
+                            <img src="../../static/polls/images/remove.png" alt="remove" width="16px">
                         {% endif %}
                     </td>
                     <td><a href="{% url 'polls:results' question.id %}">Result</a></td>
