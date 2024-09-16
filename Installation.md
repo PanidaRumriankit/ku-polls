@@ -4,9 +4,9 @@
     `python -m venv env`
 3. Activate the virtual environment <br>
     - Windows
-      `venv\Scripts\activate`
+      `env\Scripts\activate`
     - macOS/Linux
-      `source venv/bin/activate`
+      `source env/bin/activate`
 4. Install dependencies <br>
     `pip install -r requirements.txt`
 5. Set values for externalized variables
