@@ -27,7 +27,31 @@
   "model": "polls.vote",
   "pk": 4,
   "fields": {
+    "choice": 16,
+    "user": 1
+  }
+},
+{
+  "model": "polls.vote",
+  "pk": 5,
+  "fields": {
     "choice": 15,
+    "user": 2
+  }
+},
+{
+  "model": "polls.vote",
+  "pk": 6,
+  "fields": {
+    "choice": 42,
+    "user": 1
+  }
+},
+{
+  "model": "polls.vote",
+  "pk": 7,
+  "fields": {
+    "choice": 38,
     "user": 1
   }
 }
