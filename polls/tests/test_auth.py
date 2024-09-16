@@ -9,8 +9,6 @@ from polls.models import Question, Choice
 class UserAuthTest(TestCase):
 
     def setUp(self):
-        # superclass setUp creates a Client object
-        # and initializes test database
         super().setUp()
         self.username = "testuser"
         self.password = "FatChance!"
@@ -39,37 +37,29 @@ class UserAuthTest(TestCase):
         and then redirected to the login page.
         """
         logout_url = reverse("logout")
-        # Authenticate the user.
-        # We want to logout this user, so we need to associate the
-        # user user with a session.  Setting client.user = ... doesn't work.
-        # Use Client.login(username, password) to do that.
-        # Client.login returns true on success
         self.assertTrue(
             self.client.login(username=self.username, password=self.password)
         )
-        # visit the logout page
         form_data = {}
         response = self.client.post(logout_url, form_data)
         self.assertEqual(302, response.status_code)
 
-        # should redirect us to where? Polls index? Login?
         self.assertRedirects(response, reverse(settings.LOGOUT_REDIRECT_URL))
 
     def test_login_view(self):
         """A user can login using the login view."""
         login_url = reverse("login")
-        # Can get the login page
+
         response = self.client.get(login_url)
         self.assertEqual(200, response.status_code)
-        # Can login using a POST request
-        # usage: client.post(url, {'key1":"value", "key2":"value"})
+
         form_data = {"username": "testuser",
                      "password": "FatChance!"
                      }
         response = self.client.post(login_url, form_data)
-        # after successful login, should redirect browser somewhere
+
         self.assertEqual(302, response.status_code)
-        # should redirect us to the polls index page ("polls:index")
+
         self.assertRedirects(response, reverse(settings.LOGIN_REDIRECT_URL))
 
     def test_auth_required_to_vote(self):
@@ -82,15 +72,43 @@ class UserAuthTest(TestCase):
         """
         vote_url = reverse('polls:vote', args=[self.question.id])
 
-        # what choice to vote for?
         choice = self.question.choice_set.first()
-        # the polls detail page has a form, each choice is identified by its id
+
         form_data = {"choice": f"{choice.id}"}
         response = self.client.post(vote_url, form_data)
-        # should be redirected to the login page
-        self.assertEqual(response.status_code, 302)  # could be 303
-        # the query parameter ?next=/polls/1/vote/
-        # self.assertRedirects(response, reverse('login') )
-        # How to fix it?
+
+        self.assertEqual(response.status_code, 302)
+
         login_with_next = f"{reverse('login')}?next={vote_url}"
         self.assertRedirects(response, login_with_next)
+
+    def test_invalid_login(self):
+        """A user cannot login with invalid credentials."""
+        login_url = reverse("login")
+        form_data = {"username": "wronguser", "password": "WrongPassword!"}
+        response = self.client.post(login_url, form_data)
+        self.assertEqual(200, response.status_code)
+        self.assertContains(response, "Please enter a correct username and password.")
+
+    def test_vote_as_authenticated_user(self):
+        """An authenticated user can vote for a question."""
+        self.client.login(username=self.username, password=self.password)
+        vote_url = reverse('polls:vote', args=[self.question.id])
+        choice = self.question.choice_set.first()
+
+        form_data = {"choice": f"{choice.id}"}
+        response = self.client.post(vote_url, form_data)
+        self.assertEqual(302, response.status_code)
+        self.assertRedirects(response, reverse('polls:results', args=[self.question.id]))
+
+    def test_admin_access_with_admin_user(self):
+        """Admin users can access the admin page."""
+        admin_user = User.objects.create_superuser(
+            username="adminuser",
+            password="SuperSecretPassword!123",
+            email="adminuser@nowhere.com"
+        )
+        self.client.login(username="adminuser", password="SuperSecretPassword!123")
+        admin_url = reverse('admin:index')
+        response = self.client.get(admin_url)
+        self.assertEqual(response.status_code, 200)
