@@ -30,7 +30,7 @@ class IndexView(generic.ListView):
         published in the future). If a search query is provided, filter
         questions by the search term.
         """
-        query = self.request.GET.get('q', '')  # Get the search query from the URL
+        query = self.request.GET.get('q', '')
 
         queryset = Question.objects.filter(pub_date__lte=timezone.now()) \
             .order_by("-pub_date")
@@ -42,7 +42,8 @@ class IndexView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         """
-        Add the search query to the context to keep it in the input field after the search.
+        Add the search query to the context to keep it in the input field
+        after the search.
         """
         context = super().get_context_data(**kwargs)
         context['query'] = self.request.GET.get('q', '')
@@ -65,7 +66,8 @@ class DetailView(generic.DetailView):
             question = get_object_or_404(Question, pk=kwargs['pk'])
 
             if not question.can_vote():
-                messages.error(request, "Voting is not allowed for this question.")
+                messages.error(request, "Voting is not allowed "
+                                        "for this question.")
                 return HttpResponseRedirect(reverse("polls:index"))
             return super().get(request, *args, **kwargs)
 
@@ -79,7 +81,8 @@ class DetailView(generic.DetailView):
         """
         query = self.request.GET.get('q')
 
-        queryset = Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")
+        queryset = Question.objects.filter(pub_date__lte=timezone.now())\
+            .order_by("-pub_date")
 
         if query:
             queryset = queryset.filter(Q(question_text__icontains=query))
@@ -96,7 +99,8 @@ class DetailView(generic.DetailView):
 
         if user.is_authenticated:
             previous_vote = Vote.objects.filter(user=user,
-                                                choice__question=question).first()
+                                                choice__question=question)\
+                .first()
             context['previous_vote'] = previous_vote
         return context
 

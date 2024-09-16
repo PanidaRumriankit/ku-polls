@@ -88,7 +88,8 @@ class UserAuthTest(TestCase):
         form_data = {"username": "wronguser", "password": "WrongPassword!"}
         response = self.client.post(login_url, form_data)
         self.assertEqual(200, response.status_code)
-        self.assertContains(response, "Please enter a correct username and password.")
+        self.assertContains(response, "Please enter a correct "
+                                      "username and password.")
 
     def test_vote_as_authenticated_user(self):
         """An authenticated user can vote for a question."""
@@ -99,16 +100,18 @@ class UserAuthTest(TestCase):
         form_data = {"choice": f"{choice.id}"}
         response = self.client.post(vote_url, form_data)
         self.assertEqual(302, response.status_code)
-        self.assertRedirects(response, reverse('polls:results', args=[self.question.id]))
+        self.assertRedirects(response, reverse('polls:results',
+                                               args=[self.question.id]))
 
     def test_admin_access_with_admin_user(self):
         """Admin users can access the admin page."""
-        admin_user = User.objects.create_superuser(
+        User.objects.create_superuser(
             username="adminuser",
             password="SuperSecretPassword!123",
             email="adminuser@nowhere.com"
         )
-        self.client.login(username="adminuser", password="SuperSecretPassword!123")
+        self.client.login(username="adminuser",
+                          password="SuperSecretPassword!123")
         admin_url = reverse('admin:index')
         response = self.client.get(admin_url)
         self.assertEqual(response.status_code, 200)
