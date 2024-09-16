@@ -45,6 +45,69 @@
   }
 },
 {
+  "model": "polls.question",
+  "pk": 7,
+  "fields": {
+    "question_text": "What is the most important technological advancement of the past decade?",
+    "pub_date": "2024-09-15T12:00:00Z",
+    "end_date": "2024-09-20T18:00:00Z"
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 8,
+  "fields": {
+    "question_text": "Is climate change the biggest threat facing humanity?",
+    "pub_date": "2024-09-12T18:08:42Z",
+    "end_date": "2024-09-26T18:09:19Z"
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 9,
+  "fields": {
+    "question_text": "Which social media platform do you find most engaging?",
+    "pub_date": "2024-09-15T18:09:23Z",
+    "end_date": "2024-09-15T00:00:00Z"
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 10,
+  "fields": {
+    "question_text": "What is the future of work in the age of automation?",
+    "pub_date": "2024-09-15T18:10:00Z",
+    "end_date": null
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 11,
+  "fields": {
+    "question_text": "Should governments regulate social media platforms?",
+    "pub_date": "2024-09-15T18:10:25Z",
+    "end_date": null
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 12,
+  "fields": {
+    "question_text": "What are the ethical implications of artificial intelligence?",
+    "pub_date": "2024-09-15T18:10:50Z",
+    "end_date": null
+  }
+},
+{
+  "model": "polls.question",
+  "pk": 13,
+  "fields": {
+    "question_text": "What is the meaning of life?",
+    "pub_date": "2024-09-15T18:11:30Z",
+    "end_date": null
+  }
+},
+{
   "model": "polls.choice",
   "pk": 1,
   "fields": {
@@ -210,6 +273,174 @@
   "fields": {
     "question": 6,
     "choice_text": "MAGA"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 25,
+  "fields": {
+    "question": 7,
+    "choice_text": "Artificial intelligence"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 26,
+  "fields": {
+    "question": 7,
+    "choice_text": "Smartphones"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 27,
+  "fields": {
+    "question": 7,
+    "choice_text": "Social media"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 28,
+  "fields": {
+    "question": 8,
+    "choice_text": "Yes"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 29,
+  "fields": {
+    "question": 8,
+    "choice_text": "No"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 30,
+  "fields": {
+    "question": 8,
+    "choice_text": "There are other more pressing issues"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 31,
+  "fields": {
+    "question": 9,
+    "choice_text": "Facebook"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 32,
+  "fields": {
+    "question": 9,
+    "choice_text": "Instagram"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 33,
+  "fields": {
+    "question": 9,
+    "choice_text": "TikTok"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 34,
+  "fields": {
+    "question": 10,
+    "choice_text": "Increased job loss"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 35,
+  "fields": {
+    "question": 10,
+    "choice_text": "Creation of new jobs"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 36,
+  "fields": {
+    "question": 10,
+    "choice_text": "A mix of both"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 37,
+  "fields": {
+    "question": 11,
+    "choice_text": "Yes, to protect users"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 38,
+  "fields": {
+    "question": 11,
+    "choice_text": "No, it infringes on free speech"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 39,
+  "fields": {
+    "question": 11,
+    "choice_text": "It depends on the specific regulations"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 40,
+  "fields": {
+    "question": 12,
+    "choice_text": "Job displacement"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 41,
+  "fields": {
+    "question": 12,
+    "choice_text": "Privacy concerns"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 42,
+  "fields": {
+    "question": 12,
+    "choice_text": "Bias and discrimination"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 43,
+  "fields": {
+    "question": 13,
+    "choice_text": "To find happiness and fulfillment"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 44,
+  "fields": {
+    "question": 13,
+    "choice_text": "To make a difference in the world"
+  }
+},
+{
+  "model": "polls.choice",
+  "pk": 45,
+  "fields": {
+    "question": 13,
+    "choice_text": "To learn and grow as a person"
   }
 }
 ]
