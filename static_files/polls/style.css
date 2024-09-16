@@ -1,0 +1,78 @@
+a {
+    color: whitesmoke;
+    text-decoration: none;
+}
+
+a:hover {
+    color: dodgerblue;
+}
+
+#spec-a {
+    color: dodgerblue !important;
+}
+
+#spec-a:hover {
+    color: #0F52BA !important;
+}
+
+body {
+    color: white;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.hover-dark:hover {
+    background-color: #212529;
+    color: #fff !important;
+}
+
+.hover-light {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.hover-light:hover {
+    background-color: #999999;
+    border-color: #999999;
+}
+
+button i.bi-search {
+    font-size: 1.2rem;
+    color: white;
+}
+button i.bi-search:hover {
+    color: #999999;
+}
+
+.no-bottom-padding {
+    padding-bottom: 0 !important;
+}
+
+.search {
+  top:6px;
+  left:10px;
+}
+
+.form-control {
+    border:none;
+    padding-left:32px;
+}
+
+.form-control:focus {
+    border:none;
+    box-shadow:none;
+}
+
+table tr td {
+    vertical-align: middle;
+    padding: 5px 10px;
+}
+
+table tr td input {
+    width: 100%; /* Ensures the input fields span the full width */
+}
+
+table tr td .helptext {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: lightgray;
+}
