@@ -1,7 +1,6 @@
 ## KU Polls: Online Survey Questions 
 
 [![Django CI](https://github.com/PanidaRumriankit/ku-polls/actions/workflows/django-tests.yml/badge.svg)](https://github.com/PanidaRumriankit/ku-polls/actions/workflows/django-tests.yml)
-<br>
 
 An application to conduct online polls and surveys based
 on the [Django Tutorial project](https://docs.djangoproject.com/en/5.1/intro/tutorial01/), with
@@ -20,7 +19,8 @@ start the development server to run the app locally `python manage.py runserver`
 
 ## Demo Users
 
-Table of logins & passwords <br>
+Table of logins & passwords
+
 | Username | Password |
 |----------|----------|
 | demo1    | hackme11 |
